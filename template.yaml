@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sample SAM App that will create data needed to create a CodeWhisperer Customization for Hatchet
+
+Resources:
+  GeneratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 900
+      MemorySize: 512
+      Role: !GetAtt LambdaRole.Arn
+      CodeUri: generator/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref S3Bucket
+      Architectures:
+        - x86_64
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+
+  LambdaRole: 
+    Type: AWS::IAM::Role
+    Properties: 
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+             Version: 2012-10-17
+             Statement:
+                - Sid: Root
+                  Effect: Allow
+                  Action:
+                    - '*'
+                  Resource: '*'
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - Effect: "Allow"
+            Principal: 
+              Service: 
+                - "lambda.amazonaws.com"
+            Action: 
+              - "sts:AssumeRole"
+      Path: "/"
+Outputs:
+  FunctionName:
+    Description: "Name of the created Lambda Function"
+    Value: !Ref GeneratorFunction
