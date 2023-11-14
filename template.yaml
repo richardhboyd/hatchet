@@ -19,7 +19,7 @@ Resources:
       Architectures:
         - x86_64
   S3Bucket:
-    Type: 'AWS::S3::Bucket'
+    Type: AWS::S3::Bucket
 
   LambdaRole: 
     Type: AWS::IAM::Role
@@ -29,15 +29,15 @@ Resources:
           PolicyDocument:
              Version: 2012-10-17
              Statement:
-                - Sid: Root
+                - Sid: S3PutObject
                   Effect: Allow
                   Action:
-                    - '*'
-                  Resource: '*'
+                    - "s3:PutObject"
+                  Resource: !Sub "${S3Bucket.Arn}/tests/*"
       AssumeRolePolicyDocument: 
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement: 
-          - Effect: "Allow"
+          - Effect: Allow
             Principal: 
               Service: 
                 - "lambda.amazonaws.com"
